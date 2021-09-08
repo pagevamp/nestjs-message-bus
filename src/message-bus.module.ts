@@ -1,15 +1,12 @@
 import { DynamicModule, Module, ValueProvider } from '@nestjs/common';
 import { MessageBus } from './message-bus';
-import { MessageBusPublisher } from './message-bus-publisher';
-import {
-  CloudTaskTransport,
-  TransportResolver,
-  SyncTransport,
-} from './transport';
+import { MessagePublisher } from './message-publisher';
+import { SyncTransport } from './transport/sync';
+import { CloudTaskTransport, CloudTaskReceiver, CloudTaskSender } from './transport/cloud-task';
+import { TransportResolver, Dispatcher } from './transport';
 import { ModuleConfig } from './types';
 import { MODULE_CONFIG } from './constant';
 import { DummyMessageHandler } from './examples/dummy-message.handler';
-import { MessageExecutor } from './message-executor';
 
 @Module({})
 export class MessageBusModule {
@@ -26,9 +23,11 @@ export class MessageBusModule {
         ModuleConfigProvider,
         TransportResolver,
         CloudTaskTransport,
+        CloudTaskReceiver,
+        CloudTaskSender,
         SyncTransport,
-        MessageBusPublisher,
-        MessageExecutor,
+        MessagePublisher,
+        Dispatcher,
         MessageBus,
       ],
       exports: [MessageBus, CloudTaskTransport],

@@ -1,20 +1,18 @@
 import { Test } from '@nestjs/testing';
 import { MessageHandlerStore } from '../../src/message-handler-store';
-import { MessageBusPublisher } from '../../src/message-bus-publisher';
+import { MessagePublisher } from '../../src/message-publisher';
 import { IMessage, IMessageHandler } from '../../src/interfaces';
 import { MessageHandler } from '../../src/decorator';
 import { MessageBus } from '../../src/message-bus';
 import { Message } from '../../src/message';
-import { CloudTaskTransport, SyncTransport } from '../../src/transport';
+import { CloudTaskTransport } from '../../src/transport/cloud-task';
+import { SyncTransport } from '../../src/transport/sync';
 import { MessageBusModule } from '../../src/message-bus.module';
 
-describe('MessageBus', () => {
+describe('Message Bus', () => {
   it('it should dispatch message to a message handler calling appropriate publisher', async () => {
     class SendEmailMessage implements IMessage {
-      constructor(
-        public readonly emailAddress: string,
-        public readonly text: string,
-      ) {}
+      constructor(public readonly emailAddress: string, public readonly text: string) {}
     }
 
     @MessageHandler(SendEmailMessage)
@@ -27,17 +25,14 @@ describe('MessageBus', () => {
     const app = await Test.createTestingModule({
       imports: [
         MessageBusModule.register({
-          taskBusTransport: 'sync',
+          transport: 'sync',
         }),
       ],
       providers: [SendEmailHandler],
     }).compile();
 
     const messageBus = app.get<MessageBus>(MessageBus);
-    const messagePublisherMock = jest.spyOn(
-      app.get(MessageBusPublisher),
-      'publish',
-    );
+    const messagePublisherMock = jest.spyOn(app.get(MessagePublisher), 'publish');
 
     const message = new SendEmailMessage('random@test.com', 'hello there');
     await messageBus.dispatch(message);
@@ -54,16 +49,13 @@ describe('MessageBus', () => {
     const app = await Test.createTestingModule({
       imports: [
         MessageBusModule.register({
-          taskBusTransport: 'sync',
+          transport: 'sync',
         }),
       ],
     }).compile();
 
     class SendEmailMessage implements IMessage {
-      constructor(
-        public readonly emailAddress: string,
-        public readonly text: string,
-      ) {}
+      constructor(public readonly emailAddress: string, public readonly text: string) {}
     }
 
     const messageBus = app.get<MessageBus>(MessageBus);
@@ -81,16 +73,13 @@ describe('MessageBus', () => {
     const app = await Test.createTestingModule({
       imports: [
         MessageBusModule.register({
-          taskBusTransport: 'sync',
+          transport: 'sync',
         }),
       ],
     }).compile();
 
     class SendEmailMessage implements IMessage {
-      constructor(
-        public readonly emailAddress: string,
-        public readonly text: string,
-      ) {}
+      constructor(public readonly emailAddress: string, public readonly text: string) {}
     }
 
     @MessageHandler(SendEmailMessage)
@@ -112,10 +101,7 @@ describe('MessageBus', () => {
 
   it('it should dispatch message using valid cloud-task transport', async () => {
     class SendEmailMessage implements IMessage {
-      constructor(
-        public readonly emailAddress: string,
-        public readonly text: string,
-      ) {}
+      constructor(public readonly emailAddress: string, public readonly text: string) {}
     }
 
     @MessageHandler(SendEmailMessage)
@@ -128,7 +114,7 @@ describe('MessageBus', () => {
     const app = await Test.createTestingModule({
       imports: [
         MessageBusModule.register({
-          taskBusTransport: 'cloud-task',
+          transport: 'cloud-task',
         }),
       ],
       providers: [SendEmailMessageHandler],
@@ -137,13 +123,13 @@ describe('MessageBus', () => {
     const messageBus = app.get<MessageBus>(MessageBus);
     const transport = app.get(CloudTaskTransport);
 
-    transport.publish = jest.fn();
+    transport.send = jest.fn();
 
     const message = new SendEmailMessage('random+abcd@test.com', 'hello there');
     await messageBus.dispatch(message);
 
-    expect(transport.publish).toHaveBeenCalledTimes(1);
-    expect(transport.publish).toHaveBeenCalledWith(
+    expect(transport.send).toHaveBeenCalledTimes(1);
+    expect(transport.send).toHaveBeenCalledWith(
       new Message('SendEmailMessage', 'SendEmailMessageHandler', message, 'v1'),
     );
 
@@ -153,10 +139,7 @@ describe('MessageBus', () => {
 
   it('it should dispatch task using valid sync transport', async () => {
     class SendEmailMessage implements IMessage {
-      constructor(
-        public readonly emailAddress: string,
-        public readonly text: string,
-      ) {}
+      constructor(public readonly emailAddress: string, public readonly text: string) {}
     }
 
     @MessageHandler(SendEmailMessage)
@@ -169,7 +152,7 @@ describe('MessageBus', () => {
     const app = await Test.createTestingModule({
       imports: [
         MessageBusModule.register({
-          taskBusTransport: 'sync',
+          transport: 'sync',
         }),
       ],
       providers: [SendEmailMessageHandler],
@@ -178,13 +161,13 @@ describe('MessageBus', () => {
     const messageBus = app.get<MessageBus>(MessageBus);
     const transport = app.get(SyncTransport);
 
-    transport.publish = jest.fn();
+    transport.send = jest.fn();
 
     const message = new SendEmailMessage('random+abcd@test.com', 'hello there');
     await messageBus.dispatch(message);
 
-    expect(transport.publish).toHaveBeenCalledTimes(1);
-    expect(transport.publish).toHaveBeenCalledWith(
+    expect(transport.send).toHaveBeenCalledTimes(1);
+    expect(transport.send).toHaveBeenCalledWith(
       new Message('SendEmailMessage', 'SendEmailMessageHandler', message, 'v1'),
     );
 

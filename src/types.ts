@@ -6,7 +6,8 @@ export enum Transport {
 }
 
 export interface ITransport {
-  readonly publish: (message: Message) => Promise<void>;
+  readonly send: (message: Message) => Promise<void>;
+  readonly get: () => Promise<any>; // TODO: change
 }
 
 export interface MessageHandlerOption {
@@ -23,6 +24,6 @@ export interface CloudTaskConfig {
 }
 
 export interface ModuleConfig {
-  readonly taskBusTransport: string;
+  readonly transport: string;
   readonly cloudTask?: CloudTaskConfig;
 }
