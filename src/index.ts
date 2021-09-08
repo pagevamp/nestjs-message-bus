@@ -1,4 +1,3 @@
-export * from './interfaces/task.interface';
-export * from './interfaces/task-handler.interface';
-export * from './decorator/task-handler.decorator';
-export * from './task-bus';
+export * from './message-bus';
+export * from './message';
+export * from './message-bus.module';

@@ -36,7 +36,7 @@ export class MessageHandlerStore {
     MessageHandlerStore.value.clear();
   }
 
-  public static reflectTask(handlerClass: Function): FunctionConstructor {
+  public static reflectMessage(handlerClass: Function): FunctionConstructor {
     return Reflect.getMetadata(APP_MESSAGE_QUEUE_METADATA, handlerClass);
   }
 }

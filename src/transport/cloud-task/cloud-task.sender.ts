@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { CloudTasksClient } from '@google-cloud/tasks';
-import { CloudTaskConfig, ITransport, ModuleConfig } from '../types';
-import { Message } from '../message';
-import { MODULE_CONFIG } from '../constant';
-import { MessageHandlerStore } from '../message-handler-store';
+import { CloudTaskConfig, ModuleConfig } from '../../types';
+import { Message } from '../../message';
+import { MODULE_CONFIG } from '../../constant';
+import { MessageHandlerStore } from '../../message-handler-store';
+import { ISender } from '../types';
 
 @Injectable()
-export class CloudTaskTransport implements ITransport {
+export class CloudTaskSender implements ISender {
   private readonly client = new CloudTasksClient();
   private readonly moduleConfig: ModuleConfig;
 
@@ -15,14 +16,9 @@ export class CloudTaskTransport implements ITransport {
     this.moduleConfig = this.moduleRef.get(MODULE_CONFIG, { strict: false });
   }
 
-  async publish(message: Message): Promise<void> {
-    const {
-      project,
-      serviceAccountEmail,
-      workerHostUrl,
-      region,
-      defaultQueue,
-    } = this.moduleConfig.cloudTask as CloudTaskConfig;
+  async send(message: Message) {
+    const { project, serviceAccountEmail, workerHostUrl, region, defaultQueue } = this.moduleConfig
+      .cloudTask as CloudTaskConfig;
 
     const handlerConfig = MessageHandlerStore.ofMessageName(message.name);
     const queue = handlerConfig?.queue || defaultQueue;

@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { ITransport, Transport } from '../types';
-import { CloudTaskTransport, SyncTransport } from '../transport';
+import { CloudTaskTransport } from './cloud-task';
+import { SyncTransport } from './sync';
 
 @Injectable()
 export class TransportResolver {

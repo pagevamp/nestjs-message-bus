@@ -9,7 +9,7 @@ import { ModuleConfig, Transport } from './types';
 import { MODULE_CONFIG } from './constant';
 
 @Injectable()
-export class MessageBusPublisher {
+export class MessagePublisher {
   private readonly moduleConfig: ModuleConfig;
 
   constructor(
@@ -31,18 +31,11 @@ export class MessageBusPublisher {
       strict: false,
     });
 
-    const payload = new Message(
-      messageName,
-      resolvedMessage.handlerName,
-      message,
-      'v1',
-    );
+    const payload = new Message(messageName, resolvedMessage.handlerName, message, 'v1');
 
-    const defaultTransport = this.moduleConfig.taskBusTransport as Transport;
-    const transport = this.transportResolver.resolve(
-      resolvedMessage.transport || defaultTransport,
-    );
+    const defaultTransport = this.moduleConfig.transport as Transport;
+    const transport = this.transportResolver.resolve(resolvedMessage.transport || defaultTransport);
 
-    await transport.publish(payload);
+    await transport.send(payload);
   }
 }
