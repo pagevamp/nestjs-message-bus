@@ -1,17 +1,12 @@
 import { Message } from './message';
 
-export enum Transport {
-  CLOUD_TASK = 'cloud-task',
-  SYNC = 'sync',
-}
-
 export interface ITransport {
   readonly send: (message: Message) => Promise<void>;
   readonly get: () => Promise<any>; // TODO: change
 }
 
 export interface MessageHandlerOption {
-  readonly transport?: Transport;
+  readonly transport?: string;
   readonly queue?: string;
 }
 

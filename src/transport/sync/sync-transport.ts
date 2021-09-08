@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ITransport } from '../../types';
 import { Message } from '../../message';
-import { Dispatcher } from '../dispatcher';
+import { Dispatcher } from '../../dispatcher';
 
 @Injectable()
 export class SyncTransport implements ITransport {

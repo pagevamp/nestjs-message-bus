@@ -1,7 +1,7 @@
 import { Message } from 'message';
 
 export interface IReceiver {
-  readonly get: () => Promise<any>;
+  readonly get: () => AsyncGenerator<Message>;
 }
 
 export interface ISender {
