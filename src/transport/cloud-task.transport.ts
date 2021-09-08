@@ -1,0 +1,47 @@
+import { Injectable } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
+import { CloudTasksClient } from '@google-cloud/tasks';
+import { CloudTaskConfig, ITransport, ModuleConfig } from '../types';
+import { Message } from '../message';
+import { MODULE_CONFIG } from '../constant';
+import { MessageHandlerStore } from '../message-handler-store';
+
+@Injectable()
+export class CloudTaskTransport implements ITransport {
+  private readonly client = new CloudTasksClient();
+  private readonly moduleConfig: ModuleConfig;
+
+  constructor(private readonly moduleRef: ModuleRef) {
+    this.moduleConfig = this.moduleRef.get(MODULE_CONFIG, { strict: false });
+  }
+
+  async publish(message: Message): Promise<void> {
+    const {
+      project,
+      serviceAccountEmail,
+      workerHostUrl,
+      region,
+      defaultQueue,
+    } = this.moduleConfig.cloudTask as CloudTaskConfig;
+
+    const handlerConfig = MessageHandlerStore.ofMessageName(message.name);
+    const queue = handlerConfig?.queue || defaultQueue;
+
+    await this.client.createTask({
+      parent: this.client.queuePath(project, region, queue),
+      task: {
+        httpRequest: {
+          httpMethod: 'POST',
+          url: workerHostUrl,
+          body: Buffer.from(JSON.stringify(message)),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          oidcToken: {
+            serviceAccountEmail: serviceAccountEmail,
+          },
+        },
+      },
+    });
+  }
+}
