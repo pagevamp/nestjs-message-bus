@@ -1,10 +1,3 @@
-import { Message } from './message';
-
-export interface ITransport {
-  readonly send: (message: Message) => Promise<void>;
-  readonly get: () => Promise<any>; // TODO: change
-}
-
 export interface MessageHandlerOption {
   readonly transport?: string;
   readonly queue?: string;

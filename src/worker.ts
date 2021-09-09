@@ -1,7 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { ITransport } from 'types';
+import { Dispatcher } from './dispatcher';
+import { TransportResolver } from './transport.resolver';
 
 @Injectable()
 export class Worker {
-  run(transport: ITransport) {}
+  constructor(
+    private readonly transportResolver: TransportResolver,
+    private readonly dispatcher: Dispatcher,
+  ) {}
+
+  async run(transport: string) {
+    const resolvedTransport = this.transportResolver.resolve(transport);
+
+    for await (const message of resolvedTransport.get()) {
+      await this.dispatcher.dispatchNow(message);
+    }
+  }
 }

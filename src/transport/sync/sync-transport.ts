@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ITransport } from '../../types';
+import { ITransport } from '../types';
 import { Message } from '../../message';
 import { Dispatcher } from '../../dispatcher';
 
@@ -11,7 +11,7 @@ export class SyncTransport implements ITransport {
     return this.dispatcher.dispatchNow(message);
   }
 
-  async get() {
+  async *get() {
     throw new Error('Sync transport does not support receiving messages');
   }
 }

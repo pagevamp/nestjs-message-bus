@@ -8,6 +8,7 @@ import { Dispatcher } from './dispatcher';
 import { ModuleConfig } from './types';
 import { MODULE_CONFIG } from './constant';
 import { DummyMessageHandler } from './examples/dummy-message.handler';
+import { Worker } from './worker';
 
 @Module({})
 export class MessageBusModule {
@@ -27,8 +28,9 @@ export class MessageBusModule {
         MessagePublisher,
         Dispatcher,
         MessageBus,
+        Worker,
       ],
-      exports: [MessageBus],
+      exports: [MessageBus, Worker],
     };
   }
 }
