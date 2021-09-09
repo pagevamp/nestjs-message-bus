@@ -8,7 +8,7 @@ import { SyncTransport } from './transport/sync';
 export class TransportResolver {
   constructor(private readonly moduleRef: ModuleRef) {}
 
-  resolve(transport: string): ITransport {
+  private resolve(transport: string): ITransport {
     switch (transport) {
       case 'cloud-task':
         return this.moduleRef.get(CloudTaskTransport, { strict: false });
@@ -19,5 +19,13 @@ export class TransportResolver {
       default:
         throw new Error('Un-supported message bus transport');
     }
+  }
+
+  sender(transport: string) {
+    return this.resolve(transport).sender();
+  }
+
+  receiver(transport: string) {
+    return this.resolve(transport).receiver();
   }
 }

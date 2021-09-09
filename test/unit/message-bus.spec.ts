@@ -5,8 +5,8 @@ import { IMessage, IMessageHandler } from '../../src/interfaces';
 import { MessageHandler } from '../../src/decorator';
 import { MessageBus } from '../../src/message-bus';
 import { Message } from '../../src/message';
-import { CloudTaskTransport } from '../../src/transport/cloud-task';
-import { SyncTransport } from '../../src/transport/sync';
+import { CloudTaskSender } from '../../src/transport/cloud-task';
+import { SyncSender } from '../../src/transport/sync';
 import { MessageBusModule } from '../../src/message-bus.module';
 
 describe('Message Bus', () => {
@@ -121,7 +121,7 @@ describe('Message Bus', () => {
     }).compile();
 
     const messageBus = app.get<MessageBus>(MessageBus);
-    const transport = app.get(CloudTaskTransport);
+    const transport = app.get(CloudTaskSender);
 
     transport.send = jest.fn();
 
@@ -159,7 +159,7 @@ describe('Message Bus', () => {
     }).compile();
 
     const messageBus = app.get<MessageBus>(MessageBus);
-    const transport = app.get(SyncTransport);
+    const transport = app.get(SyncSender);
 
     transport.send = jest.fn();
 
