@@ -3,9 +3,9 @@ import { ModuleRef } from '@nestjs/core';
 import { MessageHandlerStore } from './message-handler-store';
 import { IMessage } from './interfaces/message.interface';
 import { IMessageHandler } from './interfaces/message-handler.interface';
-import { TransportResolver } from './transport';
+import { TransportResolver } from './transport.resolver';
 import { Message } from './message';
-import { ModuleConfig, Transport } from './types';
+import { ModuleConfig } from './types';
 import { MODULE_CONFIG } from './constant';
 
 @Injectable()
@@ -33,7 +33,7 @@ export class MessagePublisher {
 
     const payload = new Message(messageName, resolvedMessage.handlerName, message, 'v1');
 
-    const defaultTransport = this.moduleConfig.transport as Transport;
+    const defaultTransport = this.moduleConfig.transport;
     const transport = this.transportResolver.resolve(resolvedMessage.transport || defaultTransport);
 
     await transport.send(payload);

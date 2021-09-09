@@ -1,5 +1,5 @@
 import { Type } from '@nestjs/common';
-import { MessageHandlerOption, Transport } from './types';
+import { MessageHandlerOption } from './types';
 import { IMessage } from './interfaces/message.interface';
 import { IMessageHandler } from './interfaces/message-handler.interface';
 import { APP_MESSAGE_QUEUE_METADATA } from './constant';
@@ -9,7 +9,7 @@ export class MessageHandlerStore {
     string,
     {
       readonly handlerName: string;
-      readonly transport?: Transport;
+      readonly transport?: string;
       readonly queue?: string;
     }
   >();

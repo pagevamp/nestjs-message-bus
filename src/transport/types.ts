@@ -1,11 +1,6 @@
 import { Message } from 'message';
 
-export interface IReceiver {
-  readonly get: () => Promise<any>;
-}
-
-export interface ISender {
+export interface ITransport {
   readonly send: (message: Message) => Promise<void>;
+  readonly get: () => AsyncGenerator<Message>;
 }
-
-export interface ITransport extends IReceiver, ISender {}
