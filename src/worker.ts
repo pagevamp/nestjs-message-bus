@@ -10,9 +10,9 @@ export class Worker {
   ) {}
 
   async run(transport: string) {
-    const resolvedTransport = this.transportResolver.resolve(transport);
+    const resolvedReceiver = this.transportResolver.receiver(transport);
 
-    for await (const message of resolvedTransport.get()) {
+    for await (const message of resolvedReceiver.get()) {
       await this.dispatcher.dispatchNow(message);
     }
   }

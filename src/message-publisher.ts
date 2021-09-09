@@ -34,7 +34,7 @@ export class MessagePublisher {
     const payload = new Message(messageName, resolvedMessage.handlerName, message, 'v1');
 
     const defaultTransport = this.moduleConfig.transport;
-    const transport = this.transportResolver.resolve(resolvedMessage.transport || defaultTransport);
+    const transport = this.transportResolver.sender(resolvedMessage.transport || defaultTransport);
 
     await transport.send(payload);
   }
