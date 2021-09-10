@@ -1,14 +1,18 @@
-import { Inject, Injectable, Scope } from '@nestjs/common';
+import { ExecutionContext, Inject, Injectable, OnModuleInit, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
 
 @Injectable({
-  scope: Scope.REQUEST,
+  // scope: Scope.REQUEST,
 })
 export class CloudTaskRequest {
-  constructor(@Inject(REQUEST) private request: Request) {}
+  // constructor(@Inject(REQUEST) private request: Record<string, any>) {}
 
   getBody() {
-    return this.request.body;
+    return {
+      name: 'SendEmailMessage',
+      handler: 'SendEmailMessageHandler',
+      payload: { emailAddress: 'random@gmail.com', text: 'Hi there' },
+      version: 'v1',
+    }
   }
 }
