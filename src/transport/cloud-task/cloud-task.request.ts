@@ -1,14 +1,16 @@
-import { Inject, Injectable, Scope } from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
+import { Injectable, Scope } from '@nestjs/common';
 
 @Injectable({
-  scope: Scope.REQUEST,
+  scope: Scope.DEFAULT,
 })
 export class CloudTaskRequest {
-  constructor(@Inject(REQUEST) private request: Request) {}
+  private body: Record<string, any>;
+
+  setBody(body: any) {
+    this.body = body;
+  }
 
   getBody() {
-    return this.request.body;
+    return this.body;
   }
 }

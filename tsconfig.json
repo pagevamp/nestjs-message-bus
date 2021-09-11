@@ -12,7 +12,8 @@
       "rootDir": "./",
       "incremental": true,
       "resolveJsonModule": true,
-      "strictNullChecks": true
+      "strictNullChecks": true,
+      "esModuleInterop": true,
     },
     "exclude": ["node_modules", "dist"]
   }

@@ -6,14 +6,13 @@ import { Message } from '../../message';
 import { MODULE_CONFIG } from '../../constant';
 import { MessageHandlerStore } from '../../message-handler-store';
 import { ISender } from '../types';
-import { CloudTaskRequest } from './cloud-task.request';
 
 @Injectable()
 export class CloudTaskSender implements ISender {
   private readonly client = new CloudTasksClient();
   private readonly moduleConfig: ModuleConfig;
 
-  constructor(private readonly moduleRef: ModuleRef, private readonly request: CloudTaskRequest) {
+  constructor(private readonly moduleRef: ModuleRef) {
     this.moduleConfig = this.moduleRef.get(MODULE_CONFIG, { strict: false });
   }
 

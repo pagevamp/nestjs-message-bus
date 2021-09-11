@@ -50,5 +50,9 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "coverageDirectory": "../coverage"
+  },
+  "devDependencies": {
+    "@types/supertest": "^2.0.11",
+    "supertest": "^6.1.6"
   }
 }
