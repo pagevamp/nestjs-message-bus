@@ -10,6 +10,10 @@ import { MessageBusModule } from '../src/message-bus.module';
 import { appFactory } from './factory/app.factory';
 
 describe('Message Bus - Sync', () => {
+  afterEach(() => {
+    MessageHandlerStore.clear();
+  });
+
   it('it should dispatch message to a message handler calling appropriate publisher', async () => {
     class SendEmailMessage implements IMessage {
       constructor(public readonly emailAddress: string, public readonly text: string) {}
@@ -41,7 +45,6 @@ describe('Message Bus - Sync', () => {
     expect(messagePublisherMock).toHaveBeenCalledWith(message);
 
     messagePublisherMock.mockRestore();
-    MessageHandlerStore.clear();
     await app.close();
   });
 
@@ -95,7 +98,6 @@ describe('Message Bus - Sync', () => {
 
     await expect(messageBus.dispatch(message)).rejects.toThrowError();
 
-    MessageHandlerStore.clear();
     await app.close();
   });
 
@@ -133,7 +135,6 @@ describe('Message Bus - Sync', () => {
       new Message('SendEmailMessage', 'SendEmailMessageHandler', message, 'v1'),
     );
 
-    MessageHandlerStore.clear();
     await app.close();
   });
 });

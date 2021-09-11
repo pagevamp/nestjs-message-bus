@@ -13,11 +13,7 @@ export class Dispatcher {
       strict: false,
     });
 
-    const reflectedMessage = MessageHandlerStore.reflectMessage(resolvedHandler.constructor);
-
-    if (!reflectedMessage) {
-      throw new Error(`Unable to find message: ${message.name}`);
-    }
+    const reflectedMessage = MessageHandlerStore.reflectMessageClass(message.name);
 
     const hydratedMessage = plainToClass(reflectedMessage, message.payload);
     await resolvedHandler.execute(hydratedMessage);
