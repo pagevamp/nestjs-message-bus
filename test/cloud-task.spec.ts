@@ -1,4 +1,3 @@
-import { Test } from '@nestjs/testing';
 import { Controller, HttpCode, Post } from '@nestjs/common';
 import request from 'supertest';
 import { MessageHandlerStore } from '../src/message-handler-store';
@@ -8,8 +7,8 @@ import { MessageBus } from '../src/message-bus';
 import { Message } from '../src/message';
 import { CloudTaskSender } from '../src/transport/cloud-task';
 import { MessageBusModule } from '../src/message-bus.module';
-import { Dispatcher } from '../src/dispatcher';
 import { Worker } from '../src/worker';
+import { appFactory } from './factory/app.factory';
 
 describe('Message Bus - Cloud Task', () => {
   it('it should dispatch message using valid cloud-task transport', async () => {
@@ -24,14 +23,21 @@ describe('Message Bus - Cloud Task', () => {
       }
     }
 
-    const app = await Test.createTestingModule({
+    const app = await appFactory({
       imports: [
         MessageBusModule.register({
           transport: 'cloud-task',
+          cloudTask: {
+            defaultQueue: 'default',
+            project: 'default',
+            region: 'us-central1',
+            serviceAccountEmail: 'default@project-id.iam.gserviceaccount.com',
+            workerHostUrl: '/cloud-task-worker',
+          },
         }),
       ],
       providers: [SendEmailMessageHandler],
-    }).compile();
+    });
 
     const messageBus = app.get<MessageBus>(MessageBus);
     const transport = app.get(CloudTaskSender);
@@ -50,7 +56,7 @@ describe('Message Bus - Cloud Task', () => {
     await app.close();
   });
 
-  it.only('it should execute appropriate handler for received cloud task request body', async () => {
+  it('it should execute appropriate handler for received cloud task request body', async () => {
     class SendEmailMessage implements IMessage {
       constructor(public readonly emailAddress: string, public readonly text: string) {}
     }
@@ -58,7 +64,6 @@ describe('Message Bus - Cloud Task', () => {
     @MessageHandler(SendEmailMessage)
     class SendEmailMessageHandler implements IMessageHandler<SendEmailMessage> {
       execute(message: SendEmailMessage): Promise<void> {
-        console.log(message);
         return Promise.resolve();
       }
     }
@@ -74,23 +79,27 @@ describe('Message Bus - Cloud Task', () => {
       }
     }
 
-    const app = await Test.createTestingModule({
+    const app = await appFactory({
       imports: [
         MessageBusModule.register({
           transport: 'cloud-task',
+          cloudTask: {
+            defaultQueue: 'default',
+            project: 'default',
+            region: 'us-central1',
+            serviceAccountEmail: 'default@project-id.iam.gserviceaccount.com',
+            workerHostUrl: '/cloud-task-worker',
+          },
         }),
       ],
       providers: [SendEmailMessageHandler],
       controllers: [WorkerController],
-    }).compile();
+    });
 
-    const instance = app.createNestApplication();
-    instance.init();
+    const sendEmailMessageHandler = app.get(SendEmailMessageHandler);
+    const handlerMock = jest.spyOn(sendEmailMessageHandler, 'execute');
 
-    const dispatcher = app.get(Dispatcher);
-    const dispatcherMock = jest.spyOn(dispatcher, 'dispatchNow');
-
-    await request(instance.getHttpServer())
+    await request(app.getHttpServer())
       .post('/cloud-task-worker')
       .send({
         name: 'SendEmailMessage',
@@ -100,19 +109,11 @@ describe('Message Bus - Cloud Task', () => {
       })
       .expect(200);
 
-    // expect(dispatcherMock).toHaveBeenCalledTimes(1);
-    // expect(dispatcherMock).toHaveBeenCalledWith(
-    //   new Message(
-    //     'SendEmailMessage',
-    //     'SendEmailMessageHandler',
-    //     { emailAddress: 'random@gmail.com', text: 'Hi there' },
-    //     'v1',
-    //   ),
-    // );
+    expect(handlerMock).toHaveBeenCalledTimes(1);
+    expect(handlerMock).toHaveBeenCalledWith(new SendEmailMessage('random@gmail.com', 'Hi there'));
 
-    dispatcherMock.mockRestore();
-
+    handlerMock.mockRestore();
     MessageHandlerStore.clear();
-    await instance.close();
+    await app.close();
   });
 });

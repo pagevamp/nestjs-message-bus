@@ -7,6 +7,7 @@ import { MessageBus } from '../src/message-bus';
 import { Message } from '../src/message';
 import { SyncSender } from '../src/transport/sync';
 import { MessageBusModule } from '../src/message-bus.module';
+import { appFactory } from './factory/app.factory';
 
 describe('Message Bus - Sync', () => {
   it('it should dispatch message to a message handler calling appropriate publisher', async () => {
@@ -21,14 +22,14 @@ describe('Message Bus - Sync', () => {
       }
     }
 
-    const app = await Test.createTestingModule({
+    const app = await appFactory({
       imports: [
         MessageBusModule.register({
           transport: 'sync',
         }),
       ],
       providers: [SendEmailHandler],
-    }).compile();
+    });
 
     const messageBus = app.get<MessageBus>(MessageBus);
     const messagePublisherMock = jest.spyOn(app.get(MessagePublisher), 'publish');
@@ -45,13 +46,13 @@ describe('Message Bus - Sync', () => {
   });
 
   it('it should exit with exception if handler for message is absent', async () => {
-    const app = await Test.createTestingModule({
+    const app = await appFactory({
       imports: [
         MessageBusModule.register({
           transport: 'sync',
         }),
       ],
-    }).compile();
+    });
 
     class SendEmailMessage implements IMessage {
       constructor(public readonly emailAddress: string, public readonly text: string) {}
@@ -69,13 +70,13 @@ describe('Message Bus - Sync', () => {
   });
 
   it('it should exit with exception if handler for message is not registered as a provider', async () => {
-    const app = await Test.createTestingModule({
+    const app = await appFactory({
       imports: [
         MessageBusModule.register({
           transport: 'sync',
         }),
       ],
-    }).compile();
+    });
 
     class SendEmailMessage implements IMessage {
       constructor(public readonly emailAddress: string, public readonly text: string) {}
@@ -110,14 +111,14 @@ describe('Message Bus - Sync', () => {
       }
     }
 
-    const app = await Test.createTestingModule({
+    const app = await appFactory({
       imports: [
         MessageBusModule.register({
           transport: 'sync',
         }),
       ],
       providers: [SendEmailMessageHandler],
-    }).compile();
+    });
 
     const messageBus = app.get<MessageBus>(MessageBus);
     const transport = app.get(SyncSender);
