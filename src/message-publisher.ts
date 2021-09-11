@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { MessageHandlerStore } from './message-handler-store';
 import { IMessage } from './interfaces/message.interface';
-import { IMessageHandler } from './interfaces/message-handler.interface';
 import { TransportResolver } from './transport.resolver';
 import { Message } from './message';
 import { ModuleConfig } from './types';
@@ -21,21 +20,25 @@ export class MessagePublisher {
 
   async publish(message: IMessage): Promise<void> {
     const messageName = message.constructor.name;
-    const resolvedMessage = MessageHandlerStore.ofMessageName(messageName);
+    const resolvedHandlers = MessageHandlerStore.ofMessageName(messageName);
 
-    if (!resolvedMessage) {
+    if (!resolvedHandlers.length) {
       throw new Error(`Unable to find handler for message: ${messageName}`);
     }
 
-    this.moduleRef.get<IMessageHandler>(resolvedMessage.handlerName, {
-      strict: false,
+    // Assert all handlers are registed tied to message
+    resolvedHandlers.forEach((item) => {
+      this.moduleRef.get(item.handlerName, { strict: false });
     });
 
-    const payload = new Message(messageName, resolvedMessage.handlerName, message, 'v1');
+    // TODO: improve later
+    resolvedHandlers.forEach(async (item) => {
+      this.moduleRef.get(item.handlerName, { strict: false });
+      const payload = new Message(messageName, item.handlerName, message, 'v1');
+      const defaultTransport = this.moduleConfig.transport;
 
-    const defaultTransport = this.moduleConfig.transport;
-    const transport = this.transportResolver.sender(resolvedMessage.transport || defaultTransport);
-
-    await transport.send(payload);
+      const transport = this.transportResolver.sender(item.transport || defaultTransport);
+      await transport.send(payload);
+    });
   }
 }

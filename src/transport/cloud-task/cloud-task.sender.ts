@@ -20,7 +20,7 @@ export class CloudTaskSender implements ISender {
     const { project, serviceAccountEmail, workerHostUrl, region, defaultQueue } = this.moduleConfig
       .cloudTask as CloudTaskConfig;
 
-    const handlerConfig = MessageHandlerStore.ofMessageName(message.name);
+    const handlerConfig = MessageHandlerStore.ofHandlerName(message.handler);
     const queue = handlerConfig?.queue || defaultQueue;
 
     await this.client.createTask({

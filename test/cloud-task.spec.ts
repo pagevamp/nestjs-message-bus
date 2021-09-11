@@ -11,6 +11,10 @@ import { Worker } from '../src/worker';
 import { appFactory } from './factory/app.factory';
 
 describe('Message Bus - Cloud Task', () => {
+  afterEach(() => {
+    MessageHandlerStore.clear();
+  });
+
   it('it should dispatch message using valid cloud-task transport', async () => {
     class SendEmailMessage implements IMessage {
       constructor(public readonly emailAddress: string, public readonly text: string) {}
@@ -52,7 +56,6 @@ describe('Message Bus - Cloud Task', () => {
       new Message('SendEmailMessage', 'SendEmailMessageHandler', message, 'v1'),
     );
 
-    MessageHandlerStore.clear();
     await app.close();
   });
 
@@ -113,7 +116,6 @@ describe('Message Bus - Cloud Task', () => {
     expect(handlerMock).toHaveBeenCalledWith(new SendEmailMessage('random@gmail.com', 'Hi there'));
 
     handlerMock.mockRestore();
-    MessageHandlerStore.clear();
     await app.close();
   });
 });
