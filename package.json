@@ -39,7 +39,7 @@
     "@nestjs/common": "^7.0.0 || ^8.0.0",
     "@nestjs/core": "^7.0.0 || ^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
-    "@google-cloud/tasks": "^2.4.1"
+    "@google-cloud/tasks": "^2.3.6"
   },
   "jest": {
     "moduleFileExtensions": [
