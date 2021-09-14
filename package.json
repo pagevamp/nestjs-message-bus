@@ -1,9 +1,15 @@
 {
   "name": "nestjs-message-bus",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "description": "Message Bus implementation for nest-js",
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
   "scripts": {
+    "build": "tsc",
+    "prebuild": "rimraf dist",
     "format": "prettier --write \"**/*.ts\"",
     "test": "jest --runInBand"
   },

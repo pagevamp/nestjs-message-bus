@@ -1,4 +1,4 @@
-import { Message } from 'message';
+import { Message } from '../message';
 
 export interface ISender {
   readonly send: (message: Message) => Promise<void>;

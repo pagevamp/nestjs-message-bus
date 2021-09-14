@@ -1,4 +1,4 @@
-export * from './message-bus';
-export * from './message';
+export * from './decorator';
+export * from './interfaces';
 export * from './message-bus.module';
-export * from './types';
+export * from './worker';
