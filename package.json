@@ -1,16 +1,16 @@
 {
   "name": "nestjs-message-bus",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "Message Bus implementation for nest-js",
-  "main": "./index.js",
-  "types": "./index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "/dist"
   ],
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc -p tsconfig.json && npm run build:index",
-    "build:index": "rm -rf ./index.js ./index.d.ts && tsc -d --skipLibCheck ./index.ts",
+    "build:index": "rm -rf ./src/index.js ./src.index.d.ts && tsc -d --skipLibCheck ./index.ts",
     "format": "prettier --write \"**/*.ts\"",
     "test": "jest --runInBand"
   },
