@@ -1,16 +1,11 @@
-import { Injectable, Scope } from '@nestjs/common';
-
-@Injectable({
-  scope: Scope.DEFAULT,
-})
 export class CloudTaskRequest {
-  private body: Record<string, any>;
+  private static body: Record<string, any>;
 
-  setBody(body: any) {
-    this.body = body;
+  static setBody(body: any) {
+    CloudTaskRequest.body = body;
   }
 
-  getBody() {
-    return this.body;
+  static getBody() {
+    return CloudTaskRequest.body;
   }
 }

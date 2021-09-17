@@ -9,6 +9,7 @@
       "sourceMap": true,
       "outDir": "./dist",
       "rootDir": "./src",
+      "baseUrl": "./",
       "incremental": false,
       "resolveJsonModule": true,
       "strictNullChecks": true,

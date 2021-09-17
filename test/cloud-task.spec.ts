@@ -1,11 +1,11 @@
-import { Controller, HttpCode, Post } from '@nestjs/common';
+import { Controller, HttpCode, Post, UseInterceptors } from '@nestjs/common';
 import request from 'supertest';
 import { MessageHandlerStore } from '../src/message-handler-store';
 import { IMessage, IMessageHandler } from '../src/interfaces';
 import { MessageHandler } from '../src/decorator';
 import { MessageBus } from '../src/message-bus';
 import { Message } from '../src/message';
-import { CloudTaskSender } from '../src/transport/cloud-task';
+import { CloudTaskSender, CloudTaskRequestInterceptor } from '../src/transport/cloud-task';
 import { MessageBusModule } from '../src/message-bus.module';
 import { Worker } from '../src/worker';
 import { appFactory } from './factory/app.factory';
@@ -76,6 +76,7 @@ describe('Message Bus - Cloud Task', () => {
       constructor(private readonly worker: Worker) {}
 
       @Post('/cloud-task-worker')
+      @UseInterceptors(CloudTaskRequestInterceptor)
       @HttpCode(200)
       async runWorker() {
         await this.worker.run('cloud-task');

@@ -5,10 +5,8 @@ import { CloudTaskRequest } from './cloud-task.request';
 
 @Injectable()
 export class CloudTaskReceiver implements IReceiver {
-  constructor(private readonly request: CloudTaskRequest) {}
-
   async *get() {
-    const body = this.request.getBody();
+    const body = CloudTaskRequest.getBody();
     const message = new Message(body.name, body.handler, body.payload, body.version);
     yield message;
   }

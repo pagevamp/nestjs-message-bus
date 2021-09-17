@@ -33,7 +33,6 @@ export class MessagePublisher {
 
     // TODO: improve later
     resolvedHandlers.forEach(async (item) => {
-      this.moduleRef.get(item.handlerName, { strict: false });
       const payload = new Message(messageName, item.handlerName, message, 'v1');
       const defaultTransport = this.moduleConfig.transport;
 
