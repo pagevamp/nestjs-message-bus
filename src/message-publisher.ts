@@ -26,13 +26,12 @@ export class MessagePublisher {
       throw new Error(`Unable to find handler for message: ${messageName}`);
     }
 
-    // Assert all handlers are registed tied to message
+    // Assert all handlers are present
     resolvedHandlers.forEach((item) => {
       this.moduleRef.get(item.handlerName, { strict: false });
     });
 
-    // TODO: improve later
-    resolvedHandlers.forEach(async (item) => {
+    resolvedHandlers.map(async (item) => {
       const payload = new Message(messageName, item.handlerName, message, 'v1');
       const defaultTransport = this.moduleConfig.transport;
 

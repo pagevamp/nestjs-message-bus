@@ -4,7 +4,7 @@ import { IMessage } from './interfaces/message.interface';
 import { IMessageHandler } from './interfaces/message-handler.interface';
 
 export class MessageHandlerStore {
-  public static value = new Set<{
+  public static value = new Array<{
     messageName: string;
     handlerName: string;
     transport?: string;
@@ -19,27 +19,29 @@ export class MessageHandlerStore {
     handlerClass: Type<IMessageHandler<any>>,
     option?: MessageHandlerOption,
   ) {
-    MessageHandlerStore.value.add({
-      messageName: message.name,
-      handlerName: handlerClass.name,
-      transport: option?.transport,
-      queue: option?.queue,
-      metadata: {
-        messageClass: message,
-      },
-    });
+    if (!MessageHandlerStore.exists(message, handlerClass)) {
+      MessageHandlerStore.value.push({
+        messageName: message.name,
+        handlerName: handlerClass.name,
+        transport: option?.transport,
+        queue: option?.queue,
+        metadata: {
+          messageClass: message,
+        },
+      });
+    }
   }
 
   public static ofMessageName(message: string) {
-    return Array.from(MessageHandlerStore.value).filter((item) => item.messageName === message);
+    return MessageHandlerStore.value.filter((item) => item.messageName === message);
   }
 
   public static ofHandlerName(handler: string) {
-    return Array.from(MessageHandlerStore.value).find((item) => item.handlerName === handler);
+    return MessageHandlerStore.value.find((item) => item.handlerName === handler);
   }
 
   public static reflectMessageClass(messageName: string) {
-    const messageHandler = Array.from(MessageHandlerStore.value).find(
+    const messageHandler = MessageHandlerStore.value.find(
       (item) => item.messageName === messageName,
     );
 
@@ -50,7 +52,15 @@ export class MessageHandlerStore {
     return messageHandler.metadata.messageClass;
   }
 
+  private static exists(message: Type<IMessage>, handler: Type<IMessageHandler<any>>) {
+    const messageHandler = MessageHandlerStore.value.find(
+      (item) => item.messageName === message.name && item.handlerName === handler.name,
+    );
+
+    return !!messageHandler;
+  }
+
   public static clear() {
-    MessageHandlerStore.value.clear();
+    MessageHandlerStore.value = [];
   }
 }
