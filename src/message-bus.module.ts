@@ -20,6 +20,7 @@ export class MessageBusModule {
 
     return {
       module: MessageBusModule,
+      global: true,
       imports: [SyncModule, CloudTaskModule],
       providers: [
         DummyMessageHandler,
@@ -30,7 +31,7 @@ export class MessageBusModule {
         MessageBus,
         Worker,
       ],
-      exports: [MessageBus, Worker],
+      exports: [MessageBus, Worker, MessagePublisher],
     };
   }
 }

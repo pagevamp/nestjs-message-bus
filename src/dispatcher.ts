@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { plainToClass } from 'class-transformer';
+import { deserialize } from 'class-transformer';
 import { MessageHandlerStore } from './message-handler-store';
 import { Message } from './message';
 
@@ -14,8 +14,8 @@ export class Dispatcher {
     });
 
     const reflectedMessage = MessageHandlerStore.reflectMessageClass(message.name);
+    const hydratedMessage = deserialize(reflectedMessage, JSON.stringify(message.payload));
 
-    const hydratedMessage = plainToClass(reflectedMessage, message.payload);
-    await resolvedHandler.execute(hydratedMessage);
+    await resolvedHandler.execute(message.payload);
   }
 }

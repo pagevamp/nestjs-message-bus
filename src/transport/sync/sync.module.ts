@@ -6,6 +6,6 @@ import { SyncReceiver } from './sync.receiver';
 
 @Module({
   providers: [SyncTransport, SyncSender, SyncReceiver, Dispatcher],
-  exports: [SyncTransport],
+  exports: [SyncTransport, SyncSender, SyncReceiver, Dispatcher],
 })
 export class SyncModule {}

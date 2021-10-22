@@ -8,6 +8,6 @@ export class SyncSender implements ISender {
   constructor(private readonly dispatcher: Dispatcher) {}
 
   async send(message: Message) {
-    return this.dispatcher.dispatchNow(message);
+    await this.dispatcher.dispatchNow(message);
   }
 }
