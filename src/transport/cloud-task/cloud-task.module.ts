@@ -6,6 +6,6 @@ import { CloudTaskReceiver } from './cloud-task.receiver';
 
 @Module({
   providers: [CloudTaskRequest, CloudTaskSender, CloudTaskReceiver, CloudTaskTransport],
-  exports: [CloudTaskRequest, CloudTaskSender, CloudTaskReceiver, CloudTaskTransport],
+  exports: [CloudTaskTransport],
 })
 export class CloudTaskModule {}

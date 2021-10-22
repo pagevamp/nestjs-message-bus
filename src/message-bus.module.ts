@@ -31,7 +31,7 @@ export class MessageBusModule {
         MessageBus,
         Worker,
       ],
-      exports: [MessageBus, Worker, MessagePublisher],
+      exports: [MessageBus, Worker],
     };
   }
 }
