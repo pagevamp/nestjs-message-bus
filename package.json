@@ -1,6 +1,6 @@
 {
   "name": "nestjs-message-bus",
-  "version": "0.0.39",
+  "version": "0.0.40",
   "description": "Message Bus implementation for nest-js",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
