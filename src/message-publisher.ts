@@ -36,12 +36,15 @@ export class MessagePublisher {
     resolvedHandlers.map(async (item) => {
       const envelope = new Envelope(
         new Message(messageName, item.handlerName, message, 'v1'),
-        new Map(labels.map((label) => [label.constructor.name, label])),
+        labels,
       );
 
       const defaultTransport = this.moduleConfig.transport;
 
-      const sender = this.messageSender.resolve(item.transport || defaultTransport);
+      const sender = this.messageSender.resolve(
+        item.transport || defaultTransport,
+      );
+
       await sender.send(envelope);
     });
   }

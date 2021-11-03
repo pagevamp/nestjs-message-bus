@@ -19,7 +19,10 @@ describe('Message Bus - Cloud Task', () => {
 
   it('it should dispatch message using valid cloud-task transport', async () => {
     class SendEmailMessage implements IMessage {
-      constructor(public readonly emailAddress: string, public readonly text: string) {}
+      constructor(
+        public readonly emailAddress: string,
+        public readonly text: string,
+      ) {}
     }
 
     @MessageHandler(SendEmailMessage)
@@ -55,7 +58,14 @@ describe('Message Bus - Cloud Task', () => {
 
     expect(sender.send).toHaveBeenCalledTimes(1);
     expect(sender.send).toHaveBeenCalledWith(
-      new Envelope(new Message('SendEmailMessage', 'SendEmailMessageHandler', message, 'v1')),
+      new Envelope(
+        new Message(
+          'SendEmailMessage',
+          'SendEmailMessageHandler',
+          message,
+          'v1',
+        ),
+      ),
     );
 
     await app.close();
@@ -63,7 +73,10 @@ describe('Message Bus - Cloud Task', () => {
 
   it('it should execute appropriate handler for received cloud task request body', async () => {
     class SendEmailMessage implements IMessage {
-      constructor(public readonly emailAddress: string, public readonly text: string) {}
+      constructor(
+        public readonly emailAddress: string,
+        public readonly text: string,
+      ) {}
     }
 
     @MessageHandler(SendEmailMessage)
@@ -75,7 +88,10 @@ describe('Message Bus - Cloud Task', () => {
 
     @Controller()
     class WorkerController {
-      constructor(private readonly worker: Worker, private readonly receiver: CloudTaskReceiver) {}
+      constructor(
+        private readonly worker: Worker,
+        private readonly receiver: CloudTaskReceiver,
+      ) {}
 
       @Post('/cloud-task-worker')
       @HttpCode(200)
@@ -115,7 +131,9 @@ describe('Message Bus - Cloud Task', () => {
       .expect(200);
 
     expect(handlerMock).toHaveBeenCalledTimes(1);
-    expect(handlerMock).toHaveBeenCalledWith(new SendEmailMessage('random@gmail.com', 'Hi there'));
+    expect(handlerMock).toHaveBeenCalledWith(
+      new SendEmailMessage('random@gmail.com', 'Hi there'),
+    );
 
     handlerMock.mockRestore();
     await app.close();

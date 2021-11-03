@@ -7,7 +7,10 @@ import { MessagePublisher } from './message-publisher';
 export class MessageBus {
   constructor(private readonly publisher: MessagePublisher) {}
 
-  async dispatch(message: IMessage, labels: readonly ILabel[] = []): Promise<void> {
+  async dispatch(
+    message: IMessage,
+    labels: readonly ILabel[] = [],
+  ): Promise<void> {
     return this.publisher.publish(message, labels);
   }
 }

@@ -16,7 +16,10 @@ describe('Message Bus - Sync', () => {
 
   it('it should dispatch message to a message handler calling appropriate publisher', async () => {
     class SendEmailMessage implements IMessage {
-      constructor(public readonly emailAddress: string, public readonly text: string) {}
+      constructor(
+        public readonly emailAddress: string,
+        public readonly text: string,
+      ) {}
     }
 
     @MessageHandler(SendEmailMessage)
@@ -36,7 +39,10 @@ describe('Message Bus - Sync', () => {
     });
 
     const messageBus = app.get<MessageBus>(MessageBus);
-    const messagePublisherMock = jest.spyOn(app.get(MessagePublisher), 'publish');
+    const messagePublisherMock = jest.spyOn(
+      app.get(MessagePublisher),
+      'publish',
+    );
 
     const message = new SendEmailMessage('random@test.com', 'hello there');
     await messageBus.dispatch(message);
@@ -58,7 +64,10 @@ describe('Message Bus - Sync', () => {
     });
 
     class SendEmailMessage implements IMessage {
-      constructor(public readonly emailAddress: string, public readonly text: string) {}
+      constructor(
+        public readonly emailAddress: string,
+        public readonly text: string,
+      ) {}
     }
 
     const messageBus = app.get<MessageBus>(MessageBus);
@@ -82,7 +91,10 @@ describe('Message Bus - Sync', () => {
     });
 
     class SendEmailMessage implements IMessage {
-      constructor(public readonly emailAddress: string, public readonly text: string) {}
+      constructor(
+        public readonly emailAddress: string,
+        public readonly text: string,
+      ) {}
     }
 
     @MessageHandler(SendEmailMessage)
@@ -103,7 +115,10 @@ describe('Message Bus - Sync', () => {
 
   it('it should dispatch task using valid sync transport', async () => {
     class SendEmailMessage implements IMessage {
-      constructor(public readonly emailAddress: string, public readonly text: string) {}
+      constructor(
+        public readonly emailAddress: string,
+        public readonly text: string,
+      ) {}
     }
 
     @MessageHandler(SendEmailMessage)
@@ -132,7 +147,14 @@ describe('Message Bus - Sync', () => {
 
     expect(sender.send).toHaveBeenCalledTimes(1);
     expect(sender.send).toHaveBeenCalledWith(
-      new Envelope(new Message('SendEmailMessage', 'SendEmailMessageHandler', message, 'v1')),
+      new Envelope(
+        new Message(
+          'SendEmailMessage',
+          'SendEmailMessageHandler',
+          message,
+          'v1',
+        ),
+      ),
     );
 
     await app.close();

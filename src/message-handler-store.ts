@@ -33,11 +33,15 @@ export class MessageHandlerStore {
   }
 
   public static ofMessageName(message: string) {
-    return MessageHandlerStore.value.filter((item) => item.messageName === message);
+    return MessageHandlerStore.value.filter(
+      (item) => item.messageName === message,
+    );
   }
 
   public static ofHandlerName(handler: string) {
-    return MessageHandlerStore.value.find((item) => item.handlerName === handler);
+    return MessageHandlerStore.value.find(
+      (item) => item.handlerName === handler,
+    );
   }
 
   public static reflectMessageClass(messageName: string) {
@@ -52,9 +56,13 @@ export class MessageHandlerStore {
     return messageHandler.metadata.messageClass;
   }
 
-  private static exists(message: Type<IMessage>, handler: Type<IMessageHandler<any>>) {
+  private static exists(
+    message: Type<IMessage>,
+    handler: Type<IMessageHandler<any>>,
+  ) {
     const messageHandler = MessageHandlerStore.value.find(
-      (item) => item.messageName === message.name && item.handlerName === handler.name,
+      (item) =>
+        item.messageName === message.name && item.handlerName === handler.name,
     );
 
     return !!messageHandler;

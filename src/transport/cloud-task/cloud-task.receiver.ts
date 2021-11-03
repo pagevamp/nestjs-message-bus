@@ -15,8 +15,13 @@ export class CloudTaskReceiver implements IReceiver {
 
   async *get() {
     const body = this.request.body;
-    const message = new Message(body.name, body.handler, body.payload, body.version);
+    const message = new Message(
+      body.name,
+      body.handler,
+      body.payload,
+      body.version,
+    );
 
-    yield new Envelope(message, new Map([]));
+    yield new Envelope(message);
   }
 }

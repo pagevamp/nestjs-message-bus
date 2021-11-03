@@ -19,15 +19,20 @@ export class CloudTaskSender implements ISender {
   }
 
   async send(envelope: Envelope) {
-    const { project, serviceAccountEmail, workerHostUrl, region, defaultQueue } = this.moduleConfig
-      .cloudTask as CloudTaskConfig;
+    const {
+      project,
+      serviceAccountEmail,
+      workerHostUrl,
+      region,
+      defaultQueue,
+    } = this.moduleConfig.cloudTask as CloudTaskConfig;
 
     const message = envelope.message;
     const handlerConfig = MessageHandlerStore.ofHandlerName(message.handler);
     const queue = handlerConfig?.queue || defaultQueue;
 
     const labels = {
-      delayLabel: envelope.labels.get(DelayLabel.name),
+      delayLabel: envelope.labelsMap.get(DelayLabel.name),
     };
 
     await this.client.createTask({
@@ -35,10 +40,11 @@ export class CloudTaskSender implements ISender {
       task: {
         ...(labels.delayLabel && {
           scheduleTime: {
-            seconds: ((labels.delayLabel as DelayLabel).delayInSeconds + Date.now()) / 1000,
+            seconds:
+              (labels.delayLabel as DelayLabel).delayInSeconds +
+              Math.floor(Date.now() / 1000),
           },
         }),
-        name: message.name,
         httpRequest: {
           httpMethod: 'POST',
           url: workerHostUrl,
