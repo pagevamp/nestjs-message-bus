@@ -4,7 +4,7 @@ import { IMessage, IMessageHandler } from '../src/interfaces';
 import { MessageHandler } from '../src/decorator';
 import { MessageBus } from '../src/message-bus';
 import { Message } from '../src/message';
-import { SyncSender } from '../src/transport/sync';
+import { SyncSender } from '../src/transport/sync/sync.sender';
 import { MessageBusModule } from '../src/message-bus.module';
 import { appFactory } from './factory/app.factory';
 
@@ -122,15 +122,15 @@ describe('Message Bus - Sync', () => {
     });
 
     const messageBus = app.get<MessageBus>(MessageBus);
-    const transport = app.get(SyncSender);
+    const sender = app.get(SyncSender);
 
-    transport.send = jest.fn();
+    sender.send = jest.fn();
 
     const message = new SendEmailMessage('random+abcd@test.com', 'hello there');
     await messageBus.dispatch(message);
 
-    expect(transport.send).toHaveBeenCalledTimes(1);
-    expect(transport.send).toHaveBeenCalledWith(
+    expect(sender.send).toHaveBeenCalledTimes(1);
+    expect(sender.send).toHaveBeenCalledWith(
       new Message('SendEmailMessage', 'SendEmailMessageHandler', message, 'v1'),
     );
 

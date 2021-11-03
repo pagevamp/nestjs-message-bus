@@ -1,14 +1,15 @@
-import { Controller, HttpCode, Post, UseInterceptors } from '@nestjs/common';
+import { Controller, HttpCode, Post } from '@nestjs/common';
 import request from 'supertest';
 import { MessageHandlerStore } from '../src/message-handler-store';
 import { IMessage, IMessageHandler } from '../src/interfaces';
 import { MessageHandler } from '../src/decorator';
 import { MessageBus } from '../src/message-bus';
 import { Message } from '../src/message';
-import { CloudTaskSender, CloudTaskRequestInterceptor } from '../src/transport/cloud-task';
+import { CloudTaskSender } from '../src/transport/cloud-task/cloud-task.sender';
 import { MessageBusModule } from '../src/message-bus.module';
 import { Worker } from '../src/worker';
 import { appFactory } from './factory/app.factory';
+import { CloudTaskReceiver } from '../src/transport';
 
 describe('Message Bus - Cloud Task', () => {
   afterEach(() => {
@@ -44,15 +45,15 @@ describe('Message Bus - Cloud Task', () => {
     });
 
     const messageBus = app.get<MessageBus>(MessageBus);
-    const transport = app.get(CloudTaskSender);
+    const sender = app.get(CloudTaskSender);
 
-    transport.send = jest.fn();
+    sender.send = jest.fn();
 
     const message = new SendEmailMessage('random+abcd@test.com', 'hello there');
     await messageBus.dispatch(message);
 
-    expect(transport.send).toHaveBeenCalledTimes(1);
-    expect(transport.send).toHaveBeenCalledWith(
+    expect(sender.send).toHaveBeenCalledTimes(1);
+    expect(sender.send).toHaveBeenCalledWith(
       new Message('SendEmailMessage', 'SendEmailMessageHandler', message, 'v1'),
     );
 
@@ -73,13 +74,12 @@ describe('Message Bus - Cloud Task', () => {
 
     @Controller()
     class WorkerController {
-      constructor(private readonly worker: Worker) {}
+      constructor(private readonly worker: Worker, private readonly receiver: CloudTaskReceiver) {}
 
       @Post('/cloud-task-worker')
-      @UseInterceptors(CloudTaskRequestInterceptor)
       @HttpCode(200)
       async runWorker() {
-        await this.worker.run('cloud-task');
+        await this.worker.run(this.receiver);
       }
     }
 

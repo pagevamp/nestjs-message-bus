@@ -1,11 +1,10 @@
-import { Module } from '@nestjs/common';
-import { CloudTaskRequest } from './cloud-task.request';
-import { CloudTaskTransport } from './cloud-task.transport';
+import { Global, Module } from '@nestjs/common';
 import { CloudTaskSender } from './cloud-task.sender';
 import { CloudTaskReceiver } from './cloud-task.receiver';
 
+@Global()
 @Module({
-  providers: [CloudTaskRequest, CloudTaskSender, CloudTaskReceiver, CloudTaskTransport],
-  exports: [CloudTaskTransport],
+  providers: [CloudTaskSender, CloudTaskReceiver],
+  exports: [CloudTaskSender, CloudTaskReceiver],
 })
 export class CloudTaskModule {}

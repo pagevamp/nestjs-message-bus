@@ -7,8 +7,3 @@ export interface ISender {
 export interface IReceiver {
   readonly get: () => AsyncGenerator<Message>;
 }
-
-export interface ITransport {
-  readonly sender: () => ISender;
-  readonly receiver: () => IReceiver;
-}

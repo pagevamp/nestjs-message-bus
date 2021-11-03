@@ -1,12 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Scope } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
 import { Message } from '../../message';
 import { IReceiver } from '../types';
-import { CloudTaskRequest } from './cloud-task.request';
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST,
+})
 export class CloudTaskReceiver implements IReceiver {
+  constructor(
+    @Inject(REQUEST)
+    private readonly request: Record<string, any>,
+  ) {}
+
   async *get() {
-    const body = CloudTaskRequest.getBody();
+    const body = this.request.body;
     const message = new Message(body.name, body.handler, body.payload, body.version);
     yield message;
   }

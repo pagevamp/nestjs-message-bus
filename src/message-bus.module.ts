@@ -3,7 +3,7 @@ import { MessageBus } from './message-bus';
 import { MessagePublisher } from './message-publisher';
 import { CloudTaskModule } from './transport/cloud-task';
 import { SyncModule } from './transport/sync';
-import { TransportResolver } from './transport.resolver';
+import { MessageSender } from './message-sender';
 import { Dispatcher } from './dispatcher';
 import { ModuleConfig } from './types';
 import { MODULE_CONFIG } from './constant';
@@ -25,7 +25,7 @@ export class MessageBusModule {
       providers: [
         DummyMessageHandler,
         ModuleConfigProvider,
-        TransportResolver,
+        MessageSender,
         MessagePublisher,
         Dispatcher,
         MessageBus,
