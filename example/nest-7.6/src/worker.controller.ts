@@ -1,16 +1,13 @@
-import { Controller, Get, Post, UseInterceptors } from '@nestjs/common';
-import {
-  CloudTaskRequestInterceptor,
-  MessageBus,
-  Worker,
-} from 'nestjs-message-bus';
+import { Controller, Get, Post } from '@nestjs/common';
+import { MessageBus, Worker, CloudTaskReceiver } from 'nestjs-message-bus';
 import { ExampleMessage } from 'src/example/example.message';
 
 @Controller('worker')
 export class WorkerController {
   constructor(
     private readonly messageBus: MessageBus,
-    private worker: Worker,
+    private readonly worker: Worker,
+    private readonly cloudTaskReceiver: CloudTaskReceiver,
   ) {}
 
   @Get('/publish-example-message')
@@ -19,8 +16,7 @@ export class WorkerController {
   }
 
   @Post('/cloud-task')
-  @UseInterceptors(CloudTaskRequestInterceptor)
   async runWorker() {
-    return await this.worker.run('cloud-task');
+    return await this.worker.run(this.cloudTaskReceiver);
   }
 }
