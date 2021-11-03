@@ -4,6 +4,7 @@ import { IMessage, IMessageHandler } from '../src/interfaces';
 import { MessageHandler } from '../src/decorator';
 import { MessageBus } from '../src/message-bus';
 import { Message } from '../src/message';
+import { Envelope } from '../src/envelope';
 import { SyncSender } from '../src/transport/sync/sync.sender';
 import { MessageBusModule } from '../src/message-bus.module';
 import { appFactory } from './factory/app.factory';
@@ -41,7 +42,7 @@ describe('Message Bus - Sync', () => {
     await messageBus.dispatch(message);
 
     expect(messagePublisherMock).toHaveBeenCalledTimes(1);
-    expect(messagePublisherMock).toHaveBeenCalledWith(message);
+    expect(messagePublisherMock).toHaveBeenCalledWith(message, []);
 
     messagePublisherMock.mockRestore();
     await app.close();
@@ -131,7 +132,7 @@ describe('Message Bus - Sync', () => {
 
     expect(sender.send).toHaveBeenCalledTimes(1);
     expect(sender.send).toHaveBeenCalledWith(
-      new Message('SendEmailMessage', 'SendEmailMessageHandler', message, 'v1'),
+      new Envelope(new Message('SendEmailMessage', 'SendEmailMessageHandler', message, 'v1')),
     );
 
     await app.close();

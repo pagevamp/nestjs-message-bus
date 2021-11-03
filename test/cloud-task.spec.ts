@@ -5,6 +5,7 @@ import { IMessage, IMessageHandler } from '../src/interfaces';
 import { MessageHandler } from '../src/decorator';
 import { MessageBus } from '../src/message-bus';
 import { Message } from '../src/message';
+import { Envelope } from '../src/envelope';
 import { CloudTaskSender } from '../src/transport/cloud-task/cloud-task.sender';
 import { MessageBusModule } from '../src/message-bus.module';
 import { Worker } from '../src/worker';
@@ -54,7 +55,7 @@ describe('Message Bus - Cloud Task', () => {
 
     expect(sender.send).toHaveBeenCalledTimes(1);
     expect(sender.send).toHaveBeenCalledWith(
-      new Message('SendEmailMessage', 'SendEmailMessageHandler', message, 'v1'),
+      new Envelope(new Message('SendEmailMessage', 'SendEmailMessageHandler', message, 'v1')),
     );
 
     await app.close();

@@ -8,8 +8,8 @@ export class Worker {
 
   async run(...receivers: readonly IReceiver[]) {
     for (const receiver of receivers) {
-      for await (const message of receiver.get()) {
-        await this.dispatcher.dispatchNow(message);
+      for await (const envelope of receiver.get()) {
+        await this.dispatcher.dispatchNow(envelope.message);
       }
     }
   }
