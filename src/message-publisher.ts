@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
+import { ILabel } from './label';
 import { MessageHandlerStore } from './message-handler-store';
 import { IMessage } from './interfaces/message.interface';
-import { TransportResolver } from './transport.resolver';
+import { MessageSender } from './message-sender';
 import { Message } from './message';
 import { ModuleConfig } from './types';
 import { MODULE_CONFIG } from './constant';
+import { Envelope } from './envelope';
 
 @Injectable()
 export class MessagePublisher {
@@ -13,12 +15,12 @@ export class MessagePublisher {
 
   constructor(
     private readonly moduleRef: ModuleRef,
-    private readonly transportResolver: TransportResolver,
+    private readonly messageSender: MessageSender,
   ) {
     this.moduleConfig = this.moduleRef.get(MODULE_CONFIG, { strict: true });
   }
 
-  async publish(message: IMessage): Promise<void> {
+  async publish(message: IMessage, labels: readonly ILabel[]): Promise<void> {
     const messageName = message.constructor.name;
     const resolvedHandlers = MessageHandlerStore.ofMessageName(messageName);
 
@@ -32,11 +34,18 @@ export class MessagePublisher {
     });
 
     resolvedHandlers.map(async (item) => {
-      const payload = new Message(messageName, item.handlerName, message, 'v1');
+      const envelope = new Envelope(
+        new Message(messageName, item.handlerName, message, 'v1'),
+        labels,
+      );
+
       const defaultTransport = this.moduleConfig.transport;
 
-      const transport = this.transportResolver.sender(item.transport || defaultTransport);
-      await transport.send(payload);
+      const sender = this.messageSender.resolve(
+        item.transport || defaultTransport,
+      );
+
+      await sender.send(envelope);
     });
   }
 }

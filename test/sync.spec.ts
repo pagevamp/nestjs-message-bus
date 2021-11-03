@@ -4,7 +4,8 @@ import { IMessage, IMessageHandler } from '../src/interfaces';
 import { MessageHandler } from '../src/decorator';
 import { MessageBus } from '../src/message-bus';
 import { Message } from '../src/message';
-import { SyncSender } from '../src/transport/sync';
+import { Envelope } from '../src/envelope';
+import { SyncSender } from '../src/transport/sync/sync.sender';
 import { MessageBusModule } from '../src/message-bus.module';
 import { appFactory } from './factory/app.factory';
 
@@ -15,7 +16,10 @@ describe('Message Bus - Sync', () => {
 
   it('it should dispatch message to a message handler calling appropriate publisher', async () => {
     class SendEmailMessage implements IMessage {
-      constructor(public readonly emailAddress: string, public readonly text: string) {}
+      constructor(
+        public readonly emailAddress: string,
+        public readonly text: string,
+      ) {}
     }
 
     @MessageHandler(SendEmailMessage)
@@ -35,13 +39,16 @@ describe('Message Bus - Sync', () => {
     });
 
     const messageBus = app.get<MessageBus>(MessageBus);
-    const messagePublisherMock = jest.spyOn(app.get(MessagePublisher), 'publish');
+    const messagePublisherMock = jest.spyOn(
+      app.get(MessagePublisher),
+      'publish',
+    );
 
     const message = new SendEmailMessage('random@test.com', 'hello there');
     await messageBus.dispatch(message);
 
     expect(messagePublisherMock).toHaveBeenCalledTimes(1);
-    expect(messagePublisherMock).toHaveBeenCalledWith(message);
+    expect(messagePublisherMock).toHaveBeenCalledWith(message, []);
 
     messagePublisherMock.mockRestore();
     await app.close();
@@ -57,7 +64,10 @@ describe('Message Bus - Sync', () => {
     });
 
     class SendEmailMessage implements IMessage {
-      constructor(public readonly emailAddress: string, public readonly text: string) {}
+      constructor(
+        public readonly emailAddress: string,
+        public readonly text: string,
+      ) {}
     }
 
     const messageBus = app.get<MessageBus>(MessageBus);
@@ -81,7 +91,10 @@ describe('Message Bus - Sync', () => {
     });
 
     class SendEmailMessage implements IMessage {
-      constructor(public readonly emailAddress: string, public readonly text: string) {}
+      constructor(
+        public readonly emailAddress: string,
+        public readonly text: string,
+      ) {}
     }
 
     @MessageHandler(SendEmailMessage)
@@ -102,7 +115,10 @@ describe('Message Bus - Sync', () => {
 
   it('it should dispatch task using valid sync transport', async () => {
     class SendEmailMessage implements IMessage {
-      constructor(public readonly emailAddress: string, public readonly text: string) {}
+      constructor(
+        public readonly emailAddress: string,
+        public readonly text: string,
+      ) {}
     }
 
     @MessageHandler(SendEmailMessage)
@@ -122,16 +138,23 @@ describe('Message Bus - Sync', () => {
     });
 
     const messageBus = app.get<MessageBus>(MessageBus);
-    const transport = app.get(SyncSender);
+    const sender = app.get(SyncSender);
 
-    transport.send = jest.fn();
+    sender.send = jest.fn();
 
     const message = new SendEmailMessage('random+abcd@test.com', 'hello there');
     await messageBus.dispatch(message);
 
-    expect(transport.send).toHaveBeenCalledTimes(1);
-    expect(transport.send).toHaveBeenCalledWith(
-      new Message('SendEmailMessage', 'SendEmailMessageHandler', message, 'v1'),
+    expect(sender.send).toHaveBeenCalledTimes(1);
+    expect(sender.send).toHaveBeenCalledWith(
+      new Envelope(
+        new Message(
+          'SendEmailMessage',
+          'SendEmailMessageHandler',
+          message,
+          'v1',
+        ),
+      ),
     );
 
     await app.close();

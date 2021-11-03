@@ -1,14 +1,9 @@
-import { Message } from '../message';
+import { Envelope } from '../envelope';
 
 export interface ISender {
-  readonly send: (message: Message) => Promise<void>;
+  readonly send: (envelope: Envelope) => Promise<void>;
 }
 
 export interface IReceiver {
-  readonly get: () => AsyncGenerator<Message>;
-}
-
-export interface ITransport {
-  readonly sender: () => ISender;
-  readonly receiver: () => IReceiver;
+  readonly get: () => AsyncGenerator<Envelope>;
 }

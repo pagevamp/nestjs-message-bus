@@ -13,8 +13,14 @@ export class Dispatcher {
       strict: false,
     });
 
-    const reflectedMessage = MessageHandlerStore.reflectMessageClass(message.name);
-    const hydratedMessage = deserialize(reflectedMessage, JSON.stringify(message.payload));
+    const reflectedMessage = MessageHandlerStore.reflectMessageClass(
+      message.name,
+    );
+
+    const hydratedMessage = deserialize(
+      reflectedMessage,
+      JSON.stringify(message.payload),
+    );
 
     await resolvedHandler.execute(message.payload);
   }
