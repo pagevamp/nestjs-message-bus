@@ -6,9 +6,11 @@ import { IReceiver } from './transport';
 export class Worker {
   constructor(private readonly dispatcher: Dispatcher) {}
 
-  async run(receiver: IReceiver) {
-    for await (const message of receiver.get()) {
-      await this.dispatcher.dispatchNow(message);
+  async run(...receivers: readonly IReceiver[]) {
+    for (const receiver of receivers) {
+      for await (const message of receiver.get()) {
+        await this.dispatcher.dispatchNow(message);
+      }
     }
   }
 }

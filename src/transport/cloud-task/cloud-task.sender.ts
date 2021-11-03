@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { CloudTasksClient } from '@google-cloud/tasks';
+import { serialize } from 'class-transformer';
 import { CloudTaskConfig, ModuleConfig } from '../../types';
 import { Message } from '../../message';
 import { MODULE_CONFIG } from '../../constant';
@@ -29,7 +30,7 @@ export class CloudTaskSender implements ISender {
         httpRequest: {
           httpMethod: 'POST',
           url: workerHostUrl,
-          body: Buffer.from(JSON.stringify(message)),
+          body: Buffer.from(serialize(message)),
           headers: {
             'Content-Type': 'application/json',
           },

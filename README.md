@@ -29,17 +29,21 @@ Import `MessageBusModule` with following configuration
 
 ```
 
-Setup up a worker for cloud-task, worker url must be same as `workerHostUrl` which is configured above.
+Setup up a worker for cloud task, worker url must be same as `workerHostUrl` which is configured above.
 
 ```
 
 @Controller()
 export class WorkerController {
 
+  constructor(
+    private readonly worker: Worker, 
+    private readonly receiver: CloudTaskReceiver,
+  ) {}
+
   @Post('/cloud-task-worker')
-  @UseInterceptors(CloudTaskRequestInterceptor)
   async runWorker() {
-    await this.worker.run('cloud-task');
+    await this.worker.run(this.receiver);
   }
 
 }
